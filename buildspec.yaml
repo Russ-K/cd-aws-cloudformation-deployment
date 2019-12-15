@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Entered the install phase...
+      - npm install
+    finally:
+      - echo This always runs even if the update or install command fails 
+  pre_build:
+    commands:
+      - echo Entered the pre_build phase...
+    finally:
+      - echo This always runs even if the login command fails 
+  build:
+    commands:
+      - echo Entered the build phase...
+      - aws cloudformation package --template-file template.yaml --s3-bucket $BUILD_BUCKET --output-template-file package.yaml
+    finally:
+      - echo This always runs even if the install command fails
+  post_build:
+    commands:
+      - echo Entered the post_build phase...
+      - aws cloudformation deploy --template-file package.yaml --stack-name $PROJECT_NAME --capabilities CAPABILITY_IAM
+      - echo Build completed on `date`
