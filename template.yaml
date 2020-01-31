@@ -58,7 +58,18 @@ Resources:
           - Sid: CloudFormationPolicy
             Effect: Allow
             Action:
+              - cloudformation:Describe*
+              - cloudFormation:List*
+              - cloudformation:CreateStack
+              - cloudformation:DeleteStack
               - cloudformation:DescribeStacks
+              - cloudformation:UpdateStack
+              - cloudformation:CreateChangeSet
+              - cloudformation:DeleteChangeSet
+              - cloudformation:ExecuteChangeSet
+              - cloudformation:SetStackPolicy
+              - cloudformation:ValidateTemplate
+              - cloudformation:GetTemplateSummary
             Resource:
               - !Join 
                 - ''
@@ -69,6 +80,14 @@ Resources:
                   - ':stack/'
                   - !Ref Project
                   - '/*'
+          - Sid: CloudFormationCreationPolicy
+            Effect: Allow
+            Action:
+              - iam:*
+              - lambda:*
+              - s3:*
+            Resource:
+              - '*'
       Roles:
         - !Ref BuilderRole
   BuildProject:
@@ -88,7 +107,7 @@ Resources:
         Type: S3
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: 'aws/codebuild/nodejs:10.14.1'
+        Image: 'aws/codebuild/amazonlinux2-x86_64-standard:2.0'
         Type: LINUX_CONTAINER
       Name: !Sub '${AWS::StackName}'
       ServiceRole: !Ref BuilderRole
